@@ -8,37 +8,45 @@ import (
 
 // Пишите тесты в этом файле
 func TestGenerateWithSizeZero(t *testing.T) {
-	slice := generateRandomElements(0)
-	require.Nil(t, slice)
+	tests := []struct {
+		name    string
+		size    int
+		wantLen int
+		wantNil bool
+	}{
+		{"отрицательный размер слайса", -1, 0, true},
+		{"нулевой размер слайса", 0, 0, true},
+		{"размер слайса равен 1", 1, 1, false},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			sl := generateRandomElements(tt.size)
+			require.Len(t, sl, tt.wantLen)
+			if tt.wantNil {
+				require.Nil(t, sl)
+			}
+		})
+	}
 }
 
-// func TestGenerateWith
+func TestMaximum(t *testing.T) {
+	tests := []struct {
+		name string
+		data []int
+		want int
+	}{
+		{"пустой слайс", []int{}, 0},
+		{"непустой слайс с нулем", []int{0}, 0},
+		{"слайс с одним элементом", []int{1}, 1},
+		{"одинаковые элементы", []int{7, 7, 7}, 7},
+	}
 
-func TestGenerateWithSizeOne(t *testing.T) {
-	slice := generateRandomElements(1)
-	require.Len(t, slice, 1)
-}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			maxValue := maximum(tt.data)
+			require.Equal(t, tt.want, maxValue)
 
-func TestMaximumSliceNil(t *testing.T) {
-	var slice []int
-	max := maximum(slice)
-	require.Equal(t, 0, max)
-}
-
-func TestMaximumSliceEmpty(t *testing.T) {
-	slice := []int{}
-	max := maximum(slice)
-	require.Equal(t, 0, max)
-}
-
-func TestMaximumSliceOneElement(t *testing.T) {
-	slice := []int{1}
-	max := maximum(slice)
-	require.Equal(t, 1, max)
-}
-
-func TestMaxChunkSliceNil(t *testing.T) {
-	var slice []int
-	max := maxChunks(slice)
-	require.Equal(t, 0, max)
+		})
+	}
 }

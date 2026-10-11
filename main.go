@@ -15,14 +15,14 @@ const (
 // generateRandomElements generates random elements.
 func generateRandomElements(size int) []int {
 	// ваш код здесь
-	sl := make([]int, 0, size)
-	if size == 0 {
+	if size <= 0 {
 		return nil
 	}
-	src := rand.NewSource(time.Now().Unix())
+
+	sl := make([]int, 0, size)
+
 	for i := 0; i < size; i++ {
-		randVal := src.Int63()
-		sl = append(sl, int(randVal))
+		sl = append(sl, rand.Int())
 	}
 	return sl
 }
@@ -53,13 +53,16 @@ func maxChunks(data []int) int {
 
 	maxSl := make([]int, CHUNKS)
 	chunkSize := len(data) / CHUNKS
-	if len(data)%CHUNKS != 0 {
-		return 0
-	}
+	remain := len(data) % CHUNKS
+
+	start := 0
 	for i := 0; i < CHUNKS; i++ {
-		start := i * chunkSize
 		end := start + chunkSize
+		if i == CHUNKS-1 {
+			end += remain
+		}
 		chunk := data[start:end]
+		start = end
 
 		wg.Add(1)
 		go func(chunk []int) {
@@ -69,13 +72,7 @@ func maxChunks(data []int) int {
 	}
 	wg.Wait()
 
-	maxValue := maxSl[0]
-	for _, v := range maxSl {
-		if v > maxValue {
-			maxValue = v
-		}
-	}
-	return maxValue
+	return maximum(maxSl)
 }
 
 func main() {
